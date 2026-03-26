@@ -1,1 +1,46 @@
-docs/*
+# dependencies
+node_modules/
+
+# build outputs
+dist/
+build/
+coverage/
+
+# logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# editors and OS files
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# cache
+.vite/
+.cache/
+
+# lock optional files from package managers not in use
+package-lock.json.bak
+yarn.lock.bak
+pnpm-lock.yaml.bak
+
+# Editor directories and files
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
