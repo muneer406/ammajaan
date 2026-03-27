@@ -16,27 +16,27 @@ Use this checklist as the active execution tracker while building.
 - [x] Create `useProducts` hook
 - [x] Fetch products and categories
 - [x] Add loading and error handling
-- [ ] Build `ProductCard`
-- [ ] Build `ProductGrid`
-- [ ] Implement responsive grid breakpoints
+- [x] Build `ProductCard`
+- [x] Build `ProductGrid`
+- [x] Implement responsive grid breakpoints
 
 ## Phase 2 - Search, Filters, Sort
 
 - [x] Build `useDebounce`
-- [ ] Add search bar with debounce
-- [ ] Add category tabs
-- [ ] Add category filter control
-- [ ] Add price range filter control
-- [ ] Add sort control
-- [ ] Integrate combined filter/sort pipeline
+- [x] Add search bar with debounce
+- [x] Add category tabs
+- [x] Add category filter control
+- [x] Add price range filter control
+- [x] Add sort control
+- [x] Integrate combined filter/sort pipeline
 
 ## Phase 3 - Product Details
 
 - [x] Create product details route and page
-- [ ] Fetch product by id
-- [ ] Build image gallery (Swiper)
-- [ ] Render details content
-- [ ] Add cart/wishlist action buttons
+- [x] Fetch product by id
+- [x] Build image gallery (Swiper)
+- [x] Render details content
+- [x] Add cart/wishlist action buttons
 
 ## Phase 4 - Cart and Wishlist State
 
@@ -49,11 +49,11 @@ Use this checklist as the active execution tracker while building.
 
 ## Phase 5 - Cart and Checkout Pages
 
-- [ ] Build cart list UI and quantity controls
-- [ ] Build pricing summary card
-- [ ] Build checkout page
-- [ ] Add checkout form with react-hook-form + yup
-- [ ] Add subtotal/tax/total calculations
+- [x] Build cart list UI and quantity controls
+- [x] Build pricing summary card
+- [x] Build checkout page
+- [x] Add checkout form with react-hook-form + yup
+- [x] Add subtotal/tax/total calculations
 
 ## Phase 6 - UX Polish and Reliability
 
