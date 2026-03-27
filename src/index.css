@@ -272,6 +272,25 @@ p {
   gap: 12px;
 }
 
+.wishlist-list {
+  display: grid;
+  gap: 12px;
+}
+
+.wishlist-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.wishlist-item__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .cart-item__actions {
   display: flex;
   flex-wrap: wrap;

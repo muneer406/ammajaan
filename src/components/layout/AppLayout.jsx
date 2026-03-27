@@ -1,4 +1,5 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useCart } from "../../hooks/useCart";
 import { useWishlist } from "../../hooks/useWishlist";
 
@@ -10,7 +11,10 @@ const navItems = [
   { to: "/checkout", label: "Checkout" },
 ];
 
+const MotionDiv = motion.div;
+
 function AppLayout() {
+  const location = useLocation();
   const { cartItemCount } = useCart();
   const { wishlistCount } = useWishlist();
 
@@ -46,7 +50,17 @@ function AppLayout() {
       </header>
 
       <main>
-        <Outlet />
+        <AnimatePresence mode="wait">
+          <MotionDiv
+            key={location.pathname}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+          >
+            <Outlet />
+          </MotionDiv>
+        </AnimatePresence>
       </main>
     </div>
   );

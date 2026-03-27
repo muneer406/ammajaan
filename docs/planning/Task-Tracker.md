@@ -57,9 +57,9 @@ Use this checklist as the active execution tracker while building.
 
 ## Phase 6 - UX Polish and Reliability
 
-- [ ] Add framer-motion transitions and page reveals
-- [ ] Add toast feedback for actions
-- [ ] Create empty states for products/cart/wishlist
+- [x] Add framer-motion transitions and page reveals
+- [x] Add toast feedback for actions
+- [x] Create empty states for products/cart/wishlist
 - [ ] Create error fallback UI with retry
 - [ ] Validate mobile, tablet, desktop layouts
 - [ ] Accessibility pass (keyboard/focus/labels)
