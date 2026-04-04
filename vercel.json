@@ -4,9 +4,13 @@
       "source": "/fakestore/:path*",
       "destination": "https://fakestoreapi.com/:path*"
     },
-    { 
-      "source": "/(.*)", 
-      "destination": "/index.html" 
+    {
+      "source": "/dummyjson/:path*",
+      "destination": "https://dummyjson.com/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }

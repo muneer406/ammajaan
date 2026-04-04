@@ -2,15 +2,21 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 /**
- * Browser → localhost/fakestore/* is proxied to fakestoreapi.com so dev/preview
- * avoid CORS. (Direct calls can fail with CORS when the API returns error pages
- * like Cloudflare 523 without Access-Control-Allow-Origin.)
+ * Same-origin proxies so the browser never hits third-party CORS.
+ * - /fakestore → fakestoreapi.com
+ * - /dummyjson → dummyjson.com (fallback when Fake Store is unavailable, e.g. 523)
  */
-const fakeStoreProxy = {
+const devProxy = {
   "/fakestore": {
     target: "https://fakestoreapi.com",
     changeOrigin: true,
     rewrite: (path) => path.replace(/^\/fakestore/, ""),
+    secure: true,
+  },
+  "/dummyjson": {
+    target: "https://dummyjson.com",
+    changeOrigin: true,
+    rewrite: (path) => path.replace(/^\/dummyjson/, ""),
     secure: true,
   },
 };
@@ -19,9 +25,9 @@ const fakeStoreProxy = {
 export default defineConfig({
   plugins: [react()],
   server: {
-    proxy: fakeStoreProxy,
+    proxy: devProxy,
   },
   preview: {
-    proxy: fakeStoreProxy,
+    proxy: devProxy,
   },
 });

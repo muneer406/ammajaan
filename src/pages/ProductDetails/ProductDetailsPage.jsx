@@ -7,7 +7,7 @@ import "swiper/css";
 import SafeImage from "../../components/SafeImage/SafeImage";
 import { useCart } from "../../hooks/useCart";
 import { useWishlist } from "../../hooks/useWishlist";
-import { getProductById } from "../../services/api";
+import { getProductById } from "../../services/productCatalog";
 import { getRequestErrorMessage } from "../../utils/errors";
 import { formatCurrency, usdToInr } from "../../utils/helpers";
 import { parseProductRouteId } from "../../utils/productIds";

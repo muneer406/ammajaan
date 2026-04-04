@@ -1,14 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
-import { getCategories, getProducts } from "../services/api";
+import {
+  getCatalog,
+  resetCatalogSource,
+} from "../services/productCatalog";
 import { getRequestErrorMessage } from "../utils/errors";
-
-function uniqueSortedCategories(products) {
-  const set = new Set();
-  for (const p of products) {
-    if (p?.category) set.add(p.category);
-  }
-  return [...set].sort();
-}
 
 export function useProducts() {
   const [products, setProducts] = useState([]);
@@ -20,32 +15,10 @@ export function useProducts() {
     try {
       setIsLoading(true);
       setError("");
-
-      const [productsResult, categoriesResult] = await Promise.allSettled([
-        getProducts(),
-        getCategories(),
-      ]);
-
-      if (productsResult.status === "rejected") {
-        setProducts([]);
-        setCategories([]);
-        setError(
-          getRequestErrorMessage(
-            productsResult.reason,
-            "Failed to load products. Please try again.",
-          ),
-        );
-        return;
-      }
-
-      const list = productsResult.value;
+      resetCatalogSource();
+      const { products: list, categories: cats } = await getCatalog();
       setProducts(list);
-
-      if (categoriesResult.status === "fulfilled") {
-        setCategories(categoriesResult.value);
-      } else {
-        setCategories(uniqueSortedCategories(list));
-      }
+      setCategories(cats);
     } catch (err) {
       setProducts([]);
       setCategories([]);
