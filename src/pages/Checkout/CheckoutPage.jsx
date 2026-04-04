@@ -1,9 +1,17 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { useCart } from "../../hooks/useCart";
-import { formatCurrency } from "../../utils/helpers";
+import { getRequestErrorMessage } from "../../utils/errors";
+import {
+  formatCurrency,
+  getCartTotals,
+  TAX_RATE,
+  usdToInr,
+} from "../../utils/helpers";
 
 const checkoutSchema = yup
   .object({
@@ -21,12 +29,7 @@ const checkoutSchema = yup
 
 function CheckoutPage() {
   const { cartItems, clearCart } = useCart();
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * 86 * item.quantity,
-    0,
-  );
-  const tax = subtotal * 0.18;
-  const total = subtotal + tax;
+  const { subtotal, tax, total } = getCartTotals(cartItems);
 
   const {
     register,
@@ -45,11 +48,37 @@ function CheckoutPage() {
   });
 
   const onSubmit = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    toast.success("Order placed successfully");
-    clearCart();
-    reset();
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      const orderId = uuidv4().slice(0, 8).toUpperCase();
+      toast.success(`Order #${orderId} placed successfully`);
+      clearCart();
+      reset();
+    } catch (err) {
+      toast.error(
+        getRequestErrorMessage(
+          err,
+          "Could not complete checkout. Please try again."
+        )
+      );
+    }
   };
+
+  if (cartItems.length === 0) {
+    return (
+      <section className="page">
+        <div className="neo-hero">
+          <h2>Checkout Summary</h2>
+          <p>Your cart is empty — add items before checkout.</p>
+        </div>
+        <div className="neo-panel">
+          <Link to="/products" className="nav-link">
+            Browse products
+          </Link>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="page">
@@ -139,12 +168,33 @@ function CheckoutPage() {
 
         <aside className="neo-panel checkout-summary">
           <h3>Order Summary</h3>
-          <p>Items: {cartItems.length}</p>
-          <p>Subtotal: {formatCurrency(subtotal)}</p>
-          <p>Tax (18%): {formatCurrency(tax)}</p>
-          <p>
-            <strong>Total: {formatCurrency(total)}</strong>
-          </p>
+          <ul className="checkout-lines" aria-label="Cart line items">
+            {cartItems.map((item) => {
+              const line = usdToInr(item.price) * item.quantity;
+              return (
+                <li key={item.productId} className="checkout-line">
+                  <span className="checkout-line__title">
+                    {item.title}{" "}
+                    <span className="checkout-line__qty">
+                      × {item.quantity}
+                    </span>
+                  </span>
+                  <span className="checkout-line__amount">
+                    {formatCurrency(line)}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+          <div className="checkout-totals">
+            <p>Subtotal: {formatCurrency(subtotal)}</p>
+            <p>
+              Tax ({Math.round(TAX_RATE * 100)}%): {formatCurrency(tax)}
+            </p>
+            <p>
+              <strong>Total: {formatCurrency(total)}</strong>
+            </p>
+          </div>
         </aside>
       </div>
     </section>

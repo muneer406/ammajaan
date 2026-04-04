@@ -1,38 +1,74 @@
-import { useCallback, useEffect, useState } from 'react'
-import { getCategories, getProducts } from '../services/api'
+import { useCallback, useEffect, useState } from "react";
+import { getCategories, getProducts } from "../services/api";
+import { getRequestErrorMessage } from "../utils/errors";
+
+function uniqueSortedCategories(products) {
+  const set = new Set();
+  for (const p of products) {
+    if (p?.category) set.add(p.category);
+  }
+  return [...set].sort();
+}
 
 export function useProducts() {
-    const [products, setProducts] = useState([])
-    const [categories, setCategories] = useState([])
-    const [isLoading, setIsLoading] = useState(true)
-    const [error, setError] = useState('')
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
-    const fetchProducts = useCallback(async () => {
-        try {
-            setIsLoading(true)
-            setError('')
-            const [productsData, categoriesData] = await Promise.all([
-                getProducts(),
-                getCategories(),
-            ])
-            setProducts(productsData)
-            setCategories(categoriesData)
-        } catch {
-            setError('Failed to load products. Please try again.')
-        } finally {
-            setIsLoading(false)
-        }
-    }, [])
+  const fetchProducts = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError("");
 
-    useEffect(() => {
-        fetchProducts()
-    }, [fetchProducts])
+      const [productsResult, categoriesResult] = await Promise.allSettled([
+        getProducts(),
+        getCategories(),
+      ]);
 
-    return {
-        products,
-        categories,
-        isLoading,
-        error,
-        refetch: fetchProducts,
+      if (productsResult.status === "rejected") {
+        setProducts([]);
+        setCategories([]);
+        setError(
+          getRequestErrorMessage(
+            productsResult.reason,
+            "Failed to load products. Please try again.",
+          ),
+        );
+        return;
+      }
+
+      const list = productsResult.value;
+      setProducts(list);
+
+      if (categoriesResult.status === "fulfilled") {
+        setCategories(categoriesResult.value);
+      } else {
+        setCategories(uniqueSortedCategories(list));
+      }
+    } catch (err) {
+      setProducts([]);
+      setCategories([]);
+      setError(
+        getRequestErrorMessage(
+          err,
+          "Failed to load products. Please try again.",
+        ),
+      );
+    } finally {
+      setIsLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+  return {
+    products,
+    categories,
+    isLoading,
+    error,
+    refetch: fetchProducts,
+  };
 }

@@ -1,16 +1,11 @@
 import { Link } from "react-router-dom";
 import CartItem from "../../components/CartItem/CartItem";
 import { useCart } from "../../hooks/useCart";
-import { formatCurrency } from "../../utils/helpers";
+import { formatCurrency, getCartTotals, TAX_RATE } from "../../utils/helpers";
 
 function CartPage() {
   const { cartItems, cartItemCount, clearCart } = useCart();
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * 86 * item.quantity,
-    0,
-  );
-  const tax = subtotal * 0.18;
-  const total = subtotal + tax;
+  const { subtotal, tax, total } = getCartTotals(cartItems);
 
   return (
     <section className="page">
@@ -37,7 +32,9 @@ function CartPage() {
           <aside className="neo-panel cart-summary">
             <h3>Order Summary</h3>
             <p>Subtotal: {formatCurrency(subtotal)}</p>
-            <p>Tax (18%): {formatCurrency(tax)}</p>
+            <p>
+              Tax ({Math.round(TAX_RATE * 100)}%): {formatCurrency(tax)}
+            </p>
             <p>
               <strong>Total: {formatCurrency(total)}</strong>
             </p>

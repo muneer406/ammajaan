@@ -1,10 +1,10 @@
 import { FaMinus, FaPlus, FaTrash } from "react-icons/fa";
 import { useCart } from "../../hooks/useCart";
-import { formatCurrency } from "../../utils/helpers";
+import { formatCurrency, usdToInr } from "../../utils/helpers";
 
 function CartItem({ item }) {
   const { removeFromCart, updateQuantity } = useCart();
-  const itemPriceInr = item.price * 86;
+  const itemPriceInr = usdToInr(item.price);
   const lineTotal = itemPriceInr * item.quantity;
 
   return (
