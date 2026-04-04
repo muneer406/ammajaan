@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/fakestore/:path*",
+      "destination": "https://fakestoreapi.com/:path*"
+    },
+    { 
+      "source": "/(.*)", 
+      "destination": "/index.html" 
+    }
+  ]
+}

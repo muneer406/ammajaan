@@ -2,16 +2,14 @@ import axios from "axios";
 import { parseProductRouteId } from "../utils/productIds";
 
 /**
- * Same-origin `/fakestore` avoids browser CORS when the API error page omits
- * Access-Control-Allow-Origin (e.g. Cloudflare 523). Vite proxies it in dev/preview
- * (see vite.config.js). Deployed sites call the API directly.
+ * Same-origin `/fakestore` avoids CORS: the browser only hits your origin.
+ * - Local: Vite proxies `/fakestore` → fakestoreapi.com (vite.config.js).
+ * - Vercel: `vercel.json` rewrites `/fakestore/*` → fakestoreapi.com.
+ * Node/tests (no window): call the API URL directly.
  */
 function resolveApiBaseURL() {
   if (typeof window !== "undefined") {
-    const h = window.location.hostname;
-    if (h === "localhost" || h === "127.0.0.1") {
-      return "/fakestore";
-    }
+    return "/fakestore";
   }
   return "https://fakestoreapi.com";
 }
