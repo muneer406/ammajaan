@@ -11,7 +11,7 @@ function safeWrite(key, value) {
   } catch {
     toast.warning(
       "Could not save to device storage. Cart and wishlist may reset when you close the tab.",
-      { toastId: "storage-warning" }
+      { toastId: "storage-warning" },
     );
   }
 }
@@ -25,12 +25,16 @@ function sanitizeCartItem(raw) {
   if (!Number.isInteger(productId) || productId < 1) return null;
   if (!Number.isFinite(price) || price < 0) return null;
   if (!Number.isInteger(quantity) || quantity < 1) return null;
-  return {
+  const item = {
     productId,
     title: title.trim() ? title : "Product",
     price,
     quantity,
   };
+  if (raw.image != null && String(raw.image).trim()) {
+    item.image = String(raw.image);
+  }
+  return item;
 }
 
 function sanitizeWishlistItem(raw) {
@@ -66,10 +70,10 @@ const readStorage = (key, sanitizer) => {
 
 export function CartProvider({ children }) {
   const [cartItems, setCartItems] = useState(() =>
-    readStorage(CART_KEY, sanitizeCartItem)
+    readStorage(CART_KEY, sanitizeCartItem),
   );
   const [wishlistItems, setWishlistItems] = useState(() =>
-    readStorage(WISHLIST_KEY, sanitizeWishlistItem)
+    readStorage(WISHLIST_KEY, sanitizeWishlistItem),
   );
 
   useEffect(() => {
@@ -96,19 +100,20 @@ export function CartProvider({ children }) {
     setCartItems((prev) => {
       const existing = prev.find((item) => item.productId === id);
       if (!existing) {
-        return [
-          ...prev,
-          {
-            productId: id,
-            title: String(product.title ?? "Product"),
-            price,
-            quantity: 1,
-          },
-        ];
+        const newItem = {
+          productId: id,
+          title: String(product.title ?? "Product"),
+          price,
+          quantity: 1,
+        };
+        if (product?.image != null && String(product.image).trim()) {
+          newItem.image = String(product.image);
+        }
+        return [...prev, newItem];
       }
 
       return prev.map((item) =>
-        item.productId === id ? { ...item, quantity: item.quantity + 1 } : item
+        item.productId === id ? { ...item, quantity: item.quantity + 1 } : item,
       );
     });
   };
@@ -130,8 +135,8 @@ export function CartProvider({ children }) {
 
     setCartItems((prev) =>
       prev.map((item) =>
-        item.productId === pid ? { ...item, quantity: qty } : item
-      )
+        item.productId === pid ? { ...item, quantity: qty } : item,
+      ),
     );
   };
 

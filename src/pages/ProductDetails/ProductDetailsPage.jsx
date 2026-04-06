@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { FaCartPlus, FaHeart, FaStar } from "react-icons/fa";
+import { FaCartPlus, FaHeart, FaStar, FaMinus, FaPlus } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { Link, useParams } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -18,20 +18,25 @@ function ProductDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const { addToCart } = useCart();
+  const { addToCart, cartItems, updateQuantity } = useCart();
   const { wishlistItems, toggleWishlist } = useWishlist();
+
+  const cartItem = useMemo(
+    () => cartItems.find((item) => item.productId === product?.id),
+    [cartItems, product?.id],
+  );
 
   const routeProductId = parseProductRouteId(id);
   const invalidLink = routeProductId == null;
 
   const isWishlisted = wishlistItems.some(
-    (item) => Number(item.productId) === (product?.id ?? routeProductId)
+    (item) => Number(item.productId) === (product?.id ?? routeProductId),
   );
 
   const galleryImages = useMemo(() => {
     if (!product) return [];
     return Array.from(
-      new Set([product.image, ...(product.images ?? [])].filter(Boolean))
+      new Set([product.image, ...(product.images ?? [])].filter(Boolean)),
     );
   }, [product]);
 
@@ -54,8 +59,8 @@ function ProductDetailsPage() {
       setError(
         getRequestErrorMessage(
           err,
-          "Failed to load product details. Please try again."
-        )
+          "Failed to load product details. Please try again.",
+        ),
       );
     } finally {
       setIsLoading(false);
@@ -153,14 +158,41 @@ function ProductDetailsPage() {
 
           <p>{product.description}</p>
 
-          <div className="product-card__actions">
-            <button
-              type="button"
-              className="neo-btn neo-btn--cart"
-              onClick={handleAddToCart}
-            >
-              <FaCartPlus /> Add
-            </button>
+          <div className="product-card__actions details-actions">
+            {cartItem ? (
+              <div
+                className="qty-control details-qty-control"
+                aria-label="Quantity controls"
+              >
+                <button
+                  type="button"
+                  className="neo-btn"
+                  onClick={() =>
+                    updateQuantity(product.id, cartItem.quantity - 1)
+                  }
+                >
+                  <FaMinus />
+                </button>
+                <span className="qty-pill">{cartItem.quantity}</span>
+                <button
+                  type="button"
+                  className="neo-btn"
+                  onClick={() =>
+                    updateQuantity(product.id, cartItem.quantity + 1)
+                  }
+                >
+                  <FaPlus />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                className="neo-btn neo-btn--cart"
+                onClick={handleAddToCart}
+              >
+                <FaCartPlus /> Add
+              </button>
+            )}
             <button
               type="button"
               className="neo-btn neo-btn--wish"

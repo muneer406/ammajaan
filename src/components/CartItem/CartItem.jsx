@@ -1,4 +1,5 @@
 import { FaMinus, FaPlus, FaTrash } from "react-icons/fa";
+import SafeImage from "../SafeImage/SafeImage";
 import { useCart } from "../../hooks/useCart";
 import { formatCurrency, usdToInr } from "../../utils/helpers";
 
@@ -9,7 +10,17 @@ function CartItem({ item }) {
 
   return (
     <article className="cart-item neo-panel">
-      <div>
+      {item.image && (
+        <div className="cart-item__image-wrap">
+          <SafeImage
+            src={item.image}
+            alt={item.title}
+            className="cart-item__image"
+            wrapperClassName="cart-item__image-placeholder"
+          />
+        </div>
+      )}
+      <div className="cart-item__info">
         <h3>{item.title}</h3>
         <p className="cart-item__price">{formatCurrency(itemPriceInr)} each</p>
       </div>
