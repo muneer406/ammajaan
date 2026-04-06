@@ -1,5 +1,5 @@
 /** Fake Store API prices are in USD; display in INR for the demo UI. */
-export const USD_TO_INR = 86
+export const USD_TO_INR = 96
 
 export const TAX_RATE = 0.18
 

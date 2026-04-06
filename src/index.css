@@ -28,7 +28,8 @@ body,
 }
 
 body {
-  background: radial-gradient(circle at 95% 5%, #ffd50033, transparent 35%),
+  background:
+    radial-gradient(circle at 95% 5%, #ffd50033, transparent 35%),
     radial-gradient(circle at 5% 95%, #00b3ff22, transparent 30%), var(--bg);
   color: var(--ink);
   font-family: "Space Grotesk", "Segoe UI", sans-serif;
@@ -247,9 +248,12 @@ p {
 }
 
 .details-image {
+  width: 100%;
   max-width: 100%;
+  height: auto;
   max-height: 320px;
   object-fit: contain;
+  display: block;
 }
 
 .cart-layout,
@@ -625,6 +629,34 @@ p {
   .filters-panel {
     position: static;
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Swiper styles for product details gallery */
+.details-gallery .swiper {
+  width: 100%;
+  height: auto;
+}
+
+.details-gallery .swiper-slide {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+}
+
+.details-gallery .details-image-wrap {
+  width: 100%;
+}
+
+.details-gallery .details-image {
+  width: auto;
+  height: auto;
+  display: block;
+}
+
+@media (max-width: 992px) {
+  .details-gallery {
+    width: 100%;
   }
 }
 
