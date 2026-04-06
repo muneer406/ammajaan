@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { useCart } from "../../hooks/useCart";
+import { useOrders } from "../../hooks/useOrders";
 import { getRequestErrorMessage } from "../../utils/errors";
 import {
   formatCurrency,
@@ -29,6 +30,7 @@ const checkoutSchema = yup
 
 function CheckoutPage() {
   const { cartItems, clearCart } = useCart();
+  const { addOrder } = useOrders();
   const { subtotal, tax, total } = getCartTotals(cartItems);
 
   const {
@@ -47,10 +49,26 @@ function CheckoutPage() {
     },
   });
 
-  const onSubmit = async () => {
+  const onSubmit = async (formData) => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
       const orderId = uuidv4().slice(0, 8).toUpperCase();
+
+      const order = {
+        orderId,
+        timestamp: Date.now(),
+        items: cartItems,
+        subtotal,
+        tax,
+        total,
+        customerName: formData.fullName,
+        email: formData.email,
+        address: formData.address,
+        city: formData.city,
+        pinCode: formData.pinCode,
+      };
+
+      addOrder(order);
       toast.success(`Order #${orderId} placed successfully`);
       clearCart();
       reset();
@@ -58,8 +76,8 @@ function CheckoutPage() {
       toast.error(
         getRequestErrorMessage(
           err,
-          "Could not complete checkout. Please try again."
-        )
+          "Could not complete checkout. Please try again.",
+        ),
       );
     }
   };

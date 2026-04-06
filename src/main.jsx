@@ -7,16 +7,19 @@ import "react-toastify/dist/ReactToastify.css";
 import App from "./App.jsx";
 import ErrorBoundary from "./components/ErrorBoundary/ErrorBoundary";
 import { CartProvider } from "./context/CartContext";
+import { OrdersProvider } from "./context/OrdersContext";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <CartProvider>
-        <ErrorBoundary>
-          <App />
-        </ErrorBoundary>
-        <ToastContainer position="top-right" autoClose={2200} />
+        <OrdersProvider>
+          <ErrorBoundary>
+            <App />
+          </ErrorBoundary>
+          <ToastContainer position="top-right" autoClose={2200} />
+        </OrdersProvider>
       </CartProvider>
     </BrowserRouter>
-  </StrictMode>
+  </StrictMode>,
 );

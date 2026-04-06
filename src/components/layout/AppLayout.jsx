@@ -8,6 +8,7 @@ const navItems = [
   { to: "/products", label: "Products" },
   { to: "/wishlist", label: "Wishlist" },
   { to: "/cart", label: "Cart" },
+  { to: "/orders", label: "Orders" },
   { to: "/checkout", label: "Checkout" },
 ];
 
