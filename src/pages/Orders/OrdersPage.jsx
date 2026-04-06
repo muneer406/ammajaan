@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import SafeImage from "../../components/SafeImage/SafeImage";
 import { useOrders } from "../../hooks/useOrders";
-import { formatCurrency } from "../../utils/helpers";
+import { formatCurrency, usdToInr } from "../../utils/helpers";
 
 function OrdersPage() {
   const { orders } = useOrders();
@@ -72,11 +72,11 @@ function OrdersPage() {
                   <div className="order-item__info">
                     <h4>{item.title}</h4>
                     <p>
-                      {item.quantity} × {formatCurrency(item.price)}
+                      {item.quantity} × {formatCurrency(usdToInr(item.price))}
                     </p>
                   </div>
                   <div className="order-item__total">
-                    {formatCurrency(item.price * item.quantity)}
+                    {formatCurrency(usdToInr(item.price) * item.quantity)}
                   </div>
                 </div>
               ))}
