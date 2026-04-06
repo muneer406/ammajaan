@@ -2,10 +2,13 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { FaTrash } from "react-icons/fa";
 import { v4 as uuidv4 } from "uuid";
 import * as yup from "yup";
 import { useCart } from "../../hooks/useCart";
 import { useOrders } from "../../hooks/useOrders";
+import { useAddresses } from "../../hooks/useAddresses";
 import { getRequestErrorMessage } from "../../utils/errors";
 import {
   formatCurrency,
@@ -31,13 +34,17 @@ const checkoutSchema = yup
 function CheckoutPage() {
   const { cartItems, clearCart } = useCart();
   const { addOrder } = useOrders();
+  const { addresses, addAddress, removeAddress } = useAddresses();
   const { subtotal, tax, total } = getCartTotals(cartItems);
+  const [saveAddress, setSaveAddress] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    setValue,
   } = useForm({
     resolver: yupResolver(checkoutSchema),
     defaultValues: {
@@ -49,8 +56,57 @@ function CheckoutPage() {
     },
   });
 
+  const handleDirectCheckout = async (address) => {
+    if (isProcessing) return;
+
+    try {
+      setIsProcessing(true);
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      const orderId = uuidv4().slice(0, 8).toUpperCase();
+
+      const order = {
+        orderId,
+        timestamp: Date.now(),
+        items: cartItems,
+        subtotal,
+        tax,
+        total,
+        customerName: address.fullName,
+        email: address.email,
+        address: address.address,
+        city: address.city,
+        pinCode: address.pinCode,
+      };
+
+      addOrder(order);
+      toast.success(`Order #${orderId} placed successfully`);
+      clearCart();
+      reset();
+    } catch (err) {
+      toast.error(
+        getRequestErrorMessage(
+          err,
+          "Could not complete checkout. Please try again.",
+        ),
+      );
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleDeleteAddress = (e, addressId) => {
+    e.stopPropagation();
+    removeAddress(addressId);
+  };
+
   const onSubmit = async (formData) => {
     try {
+      // Save address if checkbox is checked
+      if (saveAddress) {
+        const success = addAddress(formData);
+        if (!success) return;
+      }
+
       await new Promise((resolve) => setTimeout(resolve, 500));
       const orderId = uuidv4().slice(0, 8).toUpperCase();
 
@@ -110,6 +166,48 @@ function CheckoutPage() {
           className="neo-panel checkout-form"
           onSubmit={handleSubmit(onSubmit)}
         >
+          {addresses.length > 0 && (
+            <div className="addresses-section">
+              <h3>Saved Addresses</h3>
+              <div className="addresses-list">
+                {addresses.map((addr) => (
+                  <div key={addr.id} className="address-card neo-panel">
+                    <div className="address-card__header">
+                      <strong>{addr.fullName}</strong>
+                    </div>
+                    <div className="address-card__content">
+                      <p>{addr.address}</p>
+                      <p>
+                        {addr.city}, {addr.pinCode}
+                      </p>
+                      <p className="address-card__email">{addr.email}</p>
+                    </div>
+                    <div className="address-card__actions">
+                      <button
+                        type="button"
+                        className="neo-btn neo-btn--cart"
+                        onClick={() => handleDirectCheckout(addr)}
+                        disabled={isProcessing || isSubmitting}
+                      >
+                        {isProcessing ? "Placing..." : "Checkout"}
+                      </button>
+                      <button
+                        type="button"
+                        className="neo-btn address-delete-btn"
+                        onClick={(e) => handleDeleteAddress(e, addr.id)}
+                        title="Delete this address"
+                      >
+                        <FaTrash /> Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <hr className="section-divider" />
+              <p className="section-hint">Or enter a new address below</p>
+            </div>
+          )}
+
           <div className="control-block">
             <label htmlFor="fullName" className="control-label">
               Full Name
@@ -173,6 +271,17 @@ function CheckoutPage() {
                 <small className="form-error">{errors.pinCode.message}</small>
               )}
             </div>
+          </div>
+
+          <div className="save-address-block">
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={saveAddress}
+                onChange={(e) => setSaveAddress(e.target.checked)}
+              />
+              <span>Save this address for future orders</span>
+            </label>
           </div>
 
           <button

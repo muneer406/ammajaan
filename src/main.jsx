@@ -8,17 +8,20 @@ import App from "./App.jsx";
 import ErrorBoundary from "./components/ErrorBoundary/ErrorBoundary";
 import { CartProvider } from "./context/CartContext";
 import { OrdersProvider } from "./context/OrdersContext";
+import { AddressesProvider } from "./context/AddressesContext";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <CartProvider>
-        <OrdersProvider>
-          <ErrorBoundary>
-            <App />
-          </ErrorBoundary>
-          <ToastContainer position="top-right" autoClose={2200} />
-        </OrdersProvider>
+        <AddressesProvider>
+          <OrdersProvider>
+            <ErrorBoundary>
+              <App />
+            </ErrorBoundary>
+            <ToastContainer position="top-right" autoClose={2200} />
+          </OrdersProvider>
+        </AddressesProvider>
       </CartProvider>
     </BrowserRouter>
   </StrictMode>,
