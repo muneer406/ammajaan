@@ -5,12 +5,15 @@ import SearchBar from "../../components/SearchBar/SearchBar";
 import { useDebounce } from "../../hooks/useDebounce";
 import { useProducts } from "../../hooks/useProducts";
 
+import { usdToInr } from "../../utils/helpers";
+
 const inRange = (price, range) => {
+  const priceInr = usdToInr(price);
   if (range === "all") return true;
-  if (range === "0-100") return price >= 0 && price <= 100;
-  if (range === "100-500") return price > 100 && price <= 500;
-  if (range === "500-1000") return price > 500 && price <= 1000;
-  if (range === "1000+") return price > 1000;
+  if (range === "0-5000") return priceInr >= 0 && priceInr <= 5000;
+  if (range === "5000-20000") return priceInr > 5000 && priceInr <= 20000;
+  if (range === "20000-50000") return priceInr > 20000 && priceInr <= 50000;
+  if (range === "50000+") return priceInr > 50000;
   return true;
 };
 

@@ -1,20 +1,26 @@
-import { FaCartPlus, FaHeart, FaStar } from "react-icons/fa";
+import { FaCartPlus, FaHeart, FaStar, FaMinus, FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useMemo } from "react";
 import SafeImage from "../SafeImage/SafeImage";
 import { useCart } from "../../hooks/useCart";
 import { useWishlist } from "../../hooks/useWishlist";
 import { formatCurrency, usdToInr } from "../../utils/helpers";
 
 function ProductCard({ product }) {
-  const { addToCart } = useCart();
+  const { addToCart, cartItems, updateQuantity } = useCart();
   const { wishlistItems, toggleWishlist } = useWishlist();
 
   const pid = Number(product?.id);
   const valid = Boolean(product && Number.isInteger(pid) && pid >= 1);
 
+  const cartItem = useMemo(
+    () => cartItems.find((item) => item.productId === pid),
+    [cartItems, pid],
+  );
+
   const isWishlisted = wishlistItems.some(
-    (item) => Number(item.productId) === pid
+    (item) => Number(item.productId) === pid,
   );
 
   const handleAddToCart = () => {
@@ -66,13 +72,33 @@ function ProductCard({ product }) {
         </div>
 
         <div className="product-card__actions">
-          <button
-            type="button"
-            className="neo-btn neo-btn--cart"
-            onClick={handleAddToCart}
-          >
-            <FaCartPlus /> Add
-          </button>
+          {cartItem ? (
+            <div className="qty-control" aria-label="Quantity controls">
+              <button
+                type="button"
+                className="neo-btn"
+                onClick={() => updateQuantity(pid, cartItem.quantity - 1)}
+              >
+                <FaMinus />
+              </button>
+              <span className="qty-pill">{cartItem.quantity}</span>
+              <button
+                type="button"
+                className="neo-btn"
+                onClick={() => updateQuantity(pid, cartItem.quantity + 1)}
+              >
+                <FaPlus />
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              className="neo-btn neo-btn--cart"
+              onClick={handleAddToCart}
+            >
+              <FaCartPlus /> Add
+            </button>
+          )}
           <button
             type="button"
             className="neo-btn neo-btn--wish"
